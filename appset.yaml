@@ -1,30 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: appset-demo
+  name: eks-appset
   namespace: argocd
 spec:
   generators:
   - git:
-      repoURL: https://github.com/your-username/argo-appset-demo.git
+      repoURL: https://github.com/BBrucelee2002/argo-appset-demo.git  # 👈 YOUR REPO HERE
       revision: HEAD
       directories:
-      - path: apps/*
+      - path: apps/*  # 👈 Looks for apps in "apps/" folder
   
   template:
     metadata:
-      name: '{{path.basename}}'  # Uses folder name (e.g., "guestbook")
-      namespace: argocd
+      name: '{{path.basename}}'  # Names the app after the folder (e.g., "guestbook")
     spec:
       project: default
       source:
-        repoURL: '{{repoURL}}'
+        repoURL: '{{repoURL}}'    # Uses the same Git repo
         targetRevision: HEAD
-        path: '{{path}}'
+        path: '{{path}}'          # Path to app (e.g., "apps/guestbook")
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{path.basename}}'
+        namespace: '{{path.basename}}'  # Creates a namespace matching the app name
       syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
+        automated: {}  # Auto-syncs changes
